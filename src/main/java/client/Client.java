@@ -72,6 +72,9 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         Socket socket = new Socket("omenproject.zapto.org", 4444);
+
+
+
         Scanner scanner = new Scanner(System.in);
         System.out.print("What is your username: ");
         String username = scanner.nextLine();
