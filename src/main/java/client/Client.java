@@ -12,7 +12,7 @@ import static util.JsonUtil.formatMessage;
 
 public class Client {
 
-    public static final String SERVER = "ws://localhost:8025/ws/chat";
+    public static final String SERVER = "ws://omenproject.zapto.org:4444/ws/OMENchat";
 
     public static void main(String[] args) throws Exception {
         ClientManager client = ClientManager.createClient();

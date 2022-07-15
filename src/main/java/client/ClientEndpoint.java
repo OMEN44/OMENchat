@@ -14,16 +14,16 @@ import static java.lang.String.format;
 @javax.websocket.ClientEndpoint(encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ClientEndpoint {
 
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println(format("Connection established. session id: %s", session.getId()));
+        System.out.printf("Connection established. session id: %s%n", session.getId());
     }
 
     @OnMessage
     public void onMessage(Message message) {
-        System.out.println(format("[%s:%s] %s", simpleDateFormat.format(message.getReceived()), message.getSender(), message.getContent()));
+        System.out.printf("[%s:%s] %s%n", simpleDateFormat.format(message.getReceived()), message.getSender(), message.getContent());
     }
 
 }

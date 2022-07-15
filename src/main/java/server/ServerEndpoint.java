@@ -17,10 +17,10 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
-@javax.websocket.server.ServerEndpoint(value = "/chat", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
+@javax.websocket.server.ServerEndpoint(value = "/OMENchat", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ServerEndpoint {
 
-    static Set<Session> peers = Collections.synchronizedSet(new HashSet<>());
+    static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
     @OnOpen
     public void onOpen(Session session) {
