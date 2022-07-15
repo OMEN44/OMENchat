@@ -1,86 +1,36 @@
 package client;
 
-import java.io.*;
-import java.net.Socket;
+
+import java.net.URI;
 import java.util.Scanner;
 
+import org.glassfish.tyrus.client.ClientManager;
+
+import javax.websocket.Session;
+
+import static util.JsonUtil.formatMessage;
+
 public class Client {
-    private Socket socket;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
-    private String username;
 
-    public Client(Socket socket, String username) {
-        try {
-            this.socket = socket;
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.username = username;
-        } catch (IOException e) {
-            closeClient(socket, bufferedReader, bufferedWriter);
-        }
-    }
+    public static final String SERVER = "ws://localhost:8025/ws/chat";
 
-    public void sendMessage() {
-        try {
-            bufferedWriter.write(username);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+    public static void main(String[] args) throws Exception {
+        ClientManager client = ClientManager.createClient();
+        String message;
 
-            Scanner scanner = new Scanner(System.in);
-            while (socket.isConnected()) {
-                String messageToSend = scanner.nextLine();
-                bufferedWriter.write(username + ": " + messageToSend);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
-
-            }
-        } catch (IOException e) {
-            closeClient(socket, bufferedReader, bufferedWriter);
-        }
-    }
-
-    public void listenForMessage() {
-        new Thread(() -> {
-            String msgFromGChat;
-            while (socket.isConnected()) {
-                try {
-                    msgFromGChat = bufferedReader.readLine();
-                    System.out.println(msgFromGChat);
-                } catch (IOException e) {
-                    closeClient(socket, bufferedReader, bufferedWriter);
-                }
-            }
-        }).start();
-    }
-
-    public void closeClient(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-        try {
-            if (bufferedReader != null) {
-                bufferedReader.close();
-            }
-            if (bufferedWriter != null) {
-                bufferedWriter.close();
-            }
-            if (socket != null) {
-                socket.close();
-            }
-        } catch (IOException e) {
-            //e.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("omenproject.zapto.org", 4444);
-
-
-
+        // connect to server
         Scanner scanner = new Scanner(System.in);
-        System.out.print("What is your username: ");
-        String username = scanner.nextLine();
+        System.out.println("Welcome to Tiny Chat!");
+        System.out.println("What's your name?");
+        String user = scanner.nextLine();
+        Session session = client.connectToServer(ClientEndpoint.class, new URI(SERVER));
+        System.out.println("You are logged in as: " + user);
 
-        Client client = new Client(socket, username);
-        client.listenForMessage();
-        client.sendMessage();
+        // repeatedly read a message and send it to the server (until quit)
+        do {
+            message = scanner.nextLine();
+            session.getBasicRemote().sendText(formatMessage(message, user));
+        } while (!message.equalsIgnoreCase("quit"));
     }
+
 }
